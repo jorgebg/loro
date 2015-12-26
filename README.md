@@ -1,46 +1,34 @@
 # Loro
-Python twitter reply & fav bot
 
-## Environment variables
-```
-CONSUMER_KEY="secret"
-CONSUMER_SECRET="secret"
-ACCESS_TOKEN="secret"
-ACCESS_TOKEN_SECRET="secret"
-HANDLERS_URL="http://falaciaslogicas.com/index.json"
-```
+Python twitter bot:
+- Configured by an external JSON document retrieved through HTTP.
+- For each new mention since the last favorited tweet:
+    - Tries to reply
+    - Favorites the mention tweet
 
 ## Handlers endpoint example response
 
 ```bash
-$ curl http://falaciaslogicas.com/index.json
+$ curl http://example.com/index.json
 [
     {
-        "description": "El argumento puede tener múltiples significados distintos.",
+        "description": "asdfmovie song",
         "keywords": [
-            "anfibología",
-            "disemia",
-            "polisemia",
-            "ambigüedad"
+            "trains song",
+            "Tom Ska"
         ],
-        "title": "Anfibología",
-        "url": "http://falaciaslogicas.com/anfibologia/"
+        "title": "I like trains",
+        "url": "https://www.youtube.com/watch?v=hHkKJfcBXcw"
     },
     {
-        "description": "El argumento se da por cierto ya que es defendido por una autoridad.",
+        "description": "asdfmovie gag",
         "keywords": [
-            "Ad verecundiam"
+            "Tom Ska",
+            "internet",
+            "meme"
         ],
-        "title": "Apelación a la Autoridad",
-        "url": "http://falaciaslogicas.com/apelacion-a-la-autoridad/"
-    },
-    {
-        "description": "El argumento se da por cierto porque \"todo el mundo lo hace\".",
-        "keywords": [
-            "Ad populum"
-        ],
-        "title": "Apelación a la Multitud",
-        "url": "http://falaciaslogicas.com/apelacion-a-la-multitud/"
+        "title": "Im Going To Do A Internet",
+        "url": "http://knowyourmeme.com/memes/im-gonna-do-an-internet"
     }
 ]
 ```

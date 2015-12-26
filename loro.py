@@ -2,8 +2,20 @@ import os
 import re
 import unicodedata
 
-import tweepy
 import requests
+import tweepy
+
+try:
+    from settings import (
+        CONSUMER_KEY,
+        CONSUMER_SECRET,
+        ACCESS_TOKEN,
+        ACCESS_TOKEN_SECRET,
+        HANDLERS_URL,
+        SCREEN_NAME
+    )
+except ImportError:
+    raise ImportError('Please run "cp settings.example.py settings.py" and edit the new file.')
 
 
 URL_LENGTH = 22
@@ -12,6 +24,7 @@ TWEET_LENGTH = 140
 
 class Handler:
     def __init__(self, title, keywords, description, url):
+      self.title = title
       self.description = description
       self.url = url
 
@@ -24,8 +37,9 @@ class Handler:
     def match(self, status):
         for matcher in self.matchers:
             if matcher.search(status.text):
-                mentions = status.entities['user_mentions']
-                reply = ' '.join(map(lambda m: '@' + m['screen_name'], mentions)) + ' '
+                mentions = self.get_mentions(status)
+
+                reply = ' '.join(map(lambda m: '@' + m, mentions)) + ' '
 
                 if len(reply+self.description) <= TWEET_LENGTH:
                     reply += self.description
@@ -34,30 +48,34 @@ class Handler:
 
                 return reply
 
+    def get_mentions(self, status):
+        mentions = list(map(lambda m: m['screen_name'], status.entities['user_mentions']))
+        mentions.remove(SCREEN_NAME)
+        mentions.append(status.author.screen_name)
+        return mentions
+
     def strip_accents(self, s):
-       return ''.join(c for c in unicodedata.normalize('NFD', s)
+        return ''.join(c for c in unicodedata.normalize('NFD', s)
                       if unicodedata.category(c) != 'Mn')
+
+    def __str__(self):
+        return self.title
 
 
 def main(event=None, context=None):
-    handlers_url = os.environ['HANDLERS_URL']
-    consumer_key = os.environ['CONSUMER_KEY']
-    consumer_secret = os.environ['CONSUMER_SECRET']
-    access_token = os.environ['ACCESS_TOKEN']
-    access_token_secret = os.environ['ACCESS_TOKEN_SECRET']
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     api = tweepy.API(auth)
 
 
-    response = requests.get(handlers_url)
-    handlers = map(lambda h: Handler(**h), response.json())
+    response = requests.get(HANDLERS_URL)
+    handlers = list(map(lambda h: Handler(**h), response.json()))
 
 
     since_id = api.favorites(page=-1)[0].id
     for mention in api.mentions_timeline(since_id=since_id):
         for handler in handlers:
+            print(handler)
             reply = handler.match(mention)
             if reply:
                 print('reply', reply, mention.id)
