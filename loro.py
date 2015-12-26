@@ -40,7 +40,7 @@ class Handler:
                       if unicodedata.category(c) != 'Mn')
 
 
-def main():
+def main(event=None, context=None):
     handlers_url = os.environ['HANDLERS_URL']
     consumer_key = os.environ['CONSUMER_KEY']
     consumer_secret = os.environ['CONSUMER_SECRET']
