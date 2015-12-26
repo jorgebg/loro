@@ -10,7 +10,7 @@ ACCESS_TOKEN_SECRET="secret"
 HANDLERS_URL="http://falaciaslogicas.com/index.json"
 ```
 
-## Handlers example endpoint response
+## Handlers endpoint example response
 
 ```bash
 $ curl http://falaciaslogicas.com/index.json
