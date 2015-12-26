@@ -75,7 +75,6 @@ def main(event=None, context=None):
     since_id = api.favorites(page=-1)[0].id
     for mention in api.mentions_timeline(since_id=since_id):
         for handler in handlers:
-            print(handler)
             reply = handler.match(mention)
             if reply:
                 print('reply', reply, mention.id)
