@@ -8,7 +8,6 @@ import requests
 
 URL_LENGTH = 22
 TWEET_LENGTH = 140
-ELLIPSIS = '…'
 
 
 class Handler:
