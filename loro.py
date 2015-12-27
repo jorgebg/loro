@@ -49,7 +49,7 @@ class Handler:
                 return reply
 
     def get_mentions(self, status):
-        mentions = list(map(lambda m: m['screen_name'], status.entities['user_mentions']))
+        mentions = [m['screen_name'] for m in status.entities['user_mentions']]
         mentions.remove(SCREEN_NAME)
         mentions.append(status.author.screen_name)
         return mentions
@@ -58,8 +58,8 @@ class Handler:
         return ''.join(c for c in unicodedata.normalize('NFD', s)
                       if unicodedata.category(c) != 'Mn')
 
-    def __str__(self):
-        return self.title
+    def __repr__(self):
+        return 'Handler("%s")' % self.title
 
 
 def main(event=None, context=None):
@@ -69,11 +69,11 @@ def main(event=None, context=None):
 
 
     response = requests.get(HANDLERS_URL)
-    handlers = list(map(lambda h: Handler(**h), response.json()))
+    handlers = [Handler(**doc) for doc in response.json()]
 
 
-    since_id = api.favorites(page=-1)[0].id
-    for mention in api.mentions_timeline(since_id=since_id):
+    last_fav = api.favorites(page=-1)[0]
+    for mention in api.mentions_timeline(since_id=last_fav.id):
         for handler in handlers:
             reply = handler.match(mention)
             if reply:
